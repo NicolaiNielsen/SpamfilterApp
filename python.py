@@ -7,7 +7,7 @@ imaplib._MAXLINE = 1000000
 SERVER = 'imap.gmail.com'
 
 #Connect to gmail account using special app pw
-mail = imaplib.IMAP4_SSL(SERVER)
+mail = imaplib.IMAP4_SSL(SERVER) 
 mail.login('nicolaiaphichat@gmail.com', 'qfvatlxjnagpkqcg')
 
 # select the box you want to clean
