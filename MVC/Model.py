@@ -9,9 +9,12 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 import pickle
 from sklearn.pipeline import Pipeline
 
-from MVC.Train_model import Train_model
+from Train_model import Train_model
 
-class Predict:
+class Model:
+    
+    def __init__(self):
+        pass
     
     def predict_and_readCSV(self, filepath, column_name):
         ##quick clean
