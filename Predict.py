@@ -43,8 +43,8 @@ class Predict:
 
         return labeled_filepath
     
-    def move_spam_mails_to_spam_folder(self, labeled_filepath)
-        
+    #def move_spam_mails_to_spam_folder(self, labeled_filepath)
+        #todo
 
 p = Predict()
-p.predict_and_readCSV('emails.csv', 'Body')
+p.predict_and_readCSV('emails_20230414-121305.csv', 'Body')

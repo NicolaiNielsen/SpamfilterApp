@@ -18,11 +18,11 @@ class Model:
         message_bow = NaiveBayesClassifier.read_file_and_tokenization(df)
 
     
-        # splits the data into 80% training and 20% testing
+        # splits the data iinto 80% training and 20% testing
         # split into training set and test set; 
         # x_train and x_test represents the characteristic such as text on which we be able to predict if its spam
         # y_train and y_test are the spam/ham columns
-        # so x_train + y_train will be 80% of the dataset
+        # so x_train + y_train wll be 80% of the dataset
         # and x_test + y_test will be the 20%
         X_train, X_test, Y_train, Y_test = train_test_split(message_bow, df['label_num'], test_size=0.20, random_state= 0)
         
