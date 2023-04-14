@@ -11,6 +11,9 @@ from sklearn.pipeline import Pipeline
 
 class Train_model:
     
+    def __init__(self):
+        pass
+    
     def simple_model(self):
         df = pd.read_csv('spam_ham_dataset.csv')
         df.drop_duplicates(inplace = True)
@@ -65,22 +68,22 @@ class Train_model:
     
 
         
-test = Train_model()
-model = test.load_model()
-df = pd.read_csv('spam_ham_dataset.csv')
-df2 = pd.read_csv('emails.csv')
-print(df2['Body'].head())
+# test = Train_model()
+# model = test.load_model()
+# df = pd.read_csv('spam_ham_dataset.csv')
+# df2 = pd.read_csv('emails.csv')
+# print(df2['Body'].head())
 
 
-y_pred = model.predict(df2['Body'])
+# y_pred = model.predict(df2['Body'])
 
-num_spam_emails = sum(y_pred)
+# num_spam_emails = sum(y_pred)
 
-# print out the total number of spam emails
-print(f'Total number of spam emails: {num_spam_emails}')
+# # print out the total number of spam emails
+# print(f'Total number of spam emails: {num_spam_emails}')
 
-num_ham_emails = len(y_pred) - sum(y_pred)
+# num_ham_emails = len(y_pred) - sum(y_pred)
 
-# print out the total number of ham emails
-print(f'Total number of ham emails: {num_ham_emails}')
+# # print out the total number of ham emails
+# print(f'Total number of ham emails: {num_ham_emails}')
 

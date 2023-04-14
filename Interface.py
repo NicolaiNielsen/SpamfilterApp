@@ -1,18 +1,38 @@
 import tkinter as tk
-from tkinter import ttk #submodule of tkinter for combobox
+from tkinter import ttk #submodule of tkinter 
 import tkinter.scrolledtext as tkst
+from Predict import Predict
 
 
-class EmailClientGUI(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.master.title("Email Client")
-        self.pack()
-        self.create_widgets()
+
+class View(tk.Tk): #to make view inherit form tk.tk
+    
+    PAD = 10
+    
+    def __init__(self, controller):
+        super().__init__() #allows us to call tk methods
+        self.controller = controller #init controller
+        self.title("Find spam emails")
+        self.value_var = tk.StringVar()
+        self._make_main_frame()
+        self._make_entry()
+        self._make_buttons()
+         
+    def main(self):
+        self.mainloop()
+        print("in main of view")
         
-    
-    
+    def _make_main_frame(self):
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.pack(padx=self.PAD, pady=self.PAD) #creates padding
+        
+    def _make_entry(self): #__ for private methods
+        ent = ttk.Entry(self.main_frame, textvariable=self.value_var)
+        ent.pack()
+        
+    def _make_buttons(self):
+        frame = ttk.Frame(self.main_frame)
+        frame.pack()
 
     def create_widgets(self):
         # create label and text field for email
@@ -60,17 +80,17 @@ class EmailClientGUI(tk.Frame):
 
 class Controller:
     
+    def __init__(self):
+        self.model = Predict()
+        self.view = View(self.model)
+        
     
-    def init_combobox():
+    def main(self):
+        self.view.main()
         
-        
-def main():
-    # Add your code here
-    print("Hello, world!")
+
 
 if __name__ == "__main__":
-    main()
+    controller = Controller()
+    controller.main()
 
-root = tk.Tk()
-app = EmailClientGUI(master=root)
-app.mainloop()
