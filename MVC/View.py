@@ -10,6 +10,7 @@ class View(tk.Tk): #Inherits from ttk.frame, so u have access to ttk.frame attr 
         super().__init__() #creates instance of ttk.frame, which allows us to call mainloop()
         self.controller = controller #View needs to have access to the controller, 
         # The view needs access to the controller in order to respond to user actions and update the model
+        # thin of lambda functions, whenever buttons click happens = run method from controller
         
         #self.varname allows us access the varaibles from other methods in the class
         # username
@@ -27,22 +28,22 @@ class View(tk.Tk): #Inherits from ttk.frame, so u have access to ttk.frame attr 
         self.password_entry.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
 
         # login button
-        self.login_button = ttk.Button(self, text="Login")
+        self.login_button = ttk.Button(self, text="Login", command=self.controller.login)
         self.login_button.grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
 
         # folder combobox
         self.folder_label = ttk.Label(self, text="Select inbox to clean")
         self.folder_label.grid(column=0, row=4, sticky=tk.W, columnspan=2, padx=5, pady=5)
-        self.folder_combobox = ttk.Combobox(self, values = ['test', 'test2'])
+        self.folder_combobox = ttk.Combobox(self, values=['Not initalized'])
         self.folder_combobox.grid(column=0, row=5, columnspan=2, sticky=tk.W, padx=5, pady=5)
 
         # Find spam
-        self.find_button = ttk.Button(self, text="Search")
+        self.find_button = ttk.Button(self, text="Detect spam mails in folder")
         self.find_button.grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
 
         # move to spam folder
-        self.move_spam_button = ttk.Button(self, text="Move spam")
-        self.move_spam_button.grid(column=0, row=7, padx=5, pady=5)
+        self.move_spam_button = ttk.Button(self, text="Move spam to spam folder")
+        self.move_spam_button.grid(column=0, row=7, padx=5, pady=5, sticky=tk.W)
 
         # output log
         self.text_log = tkst.ScrolledText(self)
@@ -50,9 +51,26 @@ class View(tk.Tk): #Inherits from ttk.frame, so u have access to ttk.frame attr 
         
 
     def main(self):
+        
+        is_logged_in = False
         self.mainloop() #Runs the gui
             
+    #get email
+    def get_email(self):
+        email = str(self.username_entry.get())
+        return email
     
-    def get_email()
+    def get_pw(self):
+        pw = str(self.password_entry.get())
+        return pw
+    
+    def set_folder_combobox(self, folder):
+        self.folder_combobox['values'] = folder
+        
+    def get_folder(self):
+        self.folder_combobox.get()
+        
+    def log(self, str):
+        self.text_log.insert(tk.END, str + "\n")
             
 
