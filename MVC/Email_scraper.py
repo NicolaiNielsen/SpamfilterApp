@@ -12,8 +12,10 @@ class EmailScraper:
         try:
             self.mail.login(email_address, password)
             print("Login successful")
+            return True
         except:
             print("Login failed")
+            return False
         
 
     def extract_folder_names(self):
@@ -22,10 +24,7 @@ class EmailScraper:
         folder_names = []
         for mailbox in mailboxes:
             name = mailbox.decode().split(' ')[-1].strip('"')
-            print(name)
             folder_names.append(name)
-
-        print(folder_names)
         return folder_names
 
 
@@ -60,10 +59,6 @@ class EmailScraper:
         self.mail.close()
 
 
-emailScraper = EmailScraper()
-emailScraper.login('nicolaiaphichat@gmail.com', 'qfvatlxjnagpkqcg')
-emailScraper.extract_folder_names()
-emailScraper.fetch_emails('[Gmail]/Stjernemarkerede')
 
 # #Define email class
 # imaplib._MAXLINE = 1000000
