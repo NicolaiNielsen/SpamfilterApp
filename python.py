@@ -191,3 +191,58 @@ emailScraper.fetch_emails('[Gmail]/Stjernemarkerede')
 #         # Write the email details to the CSV file
 #     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL, quotechar='"', escapechar='\\')
 #     writer.writerow(['From', 'Subject', 'Body'])
+
+
+import tkinter as tk
+
+class Model:
+    def __init__(self):
+        self.value1 = 0
+        self.value2 = 0
+        self.result = 0
+
+    def add(self):
+        self.result = self.value1 + self.value2
+        
+class View(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+        self.value1_label = tk.Label(self, text="Value 1:")
+        self.value1_label.pack(pady=5)
+        self.value1_entry = tk.Entry(self)
+        self.value1_entry.pack(pady=5)
+        self.value2_label = tk.Label(self, text="Value 2:")
+        self.value2_label.pack(pady=5)
+        self.value2_entry = tk.Entry(self)
+        self.value2_entry.pack(pady=5)
+        self.add_button = tk.Button(self, text="Add", command=self.controller.add)
+        self.add_button.pack(pady=5)
+        self.result_label = tk.Label(self, text="Result: 0")
+        self.result_label.pack(pady=5)
+
+    def update(self, result):
+        self.result_label.config(text="Result: " + str(result))
+
+    def get_values(self):
+        value1 = int(self.value1_entry.get())
+        value2 = int(self.value2_entry.get())
+        return value1, value2
+
+class Controller:
+    def __init__(self, root):
+        self.model = Model()
+        self.view = View(root, self)
+
+    def add(self):
+        value1, value2 = self.view.get_values()
+        self.model.value1 = value1
+        self.model.value2 = value2
+        self.model.add()
+        self.view.update(self.model.result)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    controller = Controller(root)
+    controller.view.pack()
+    root.mainloop()
