@@ -2,6 +2,10 @@ import datetime
 import imaplib #Internet Message Access Protocol (IMAP)
 import email
 import csv
+import pandas as pd
+
+from tqdm import tqdm
+import time
 
 class EmailScraper:
     def __init__(self):
@@ -28,216 +32,107 @@ class EmailScraper:
         return folder_names
 
 
-    def fetch_emails(self, folder_name):
+    def fetch_emails(self, folder_name): #fetches email from selected folder
         
-      
-        self.mail.select(folder_name)
-        status, email_bytestring_list = self.mail.search('utf-8', 'ALL')
+        self.mail.select(folder_name) #select folder 
+        status, email_bytestring_list = self.mail.search('utf-8', 'ALL') #search for all emails in folder, returns tupple with (b'ok', b'1 )
+        
+        total_emails = len(email_bytestring_list[0].split()) #total emails
+        print(f"Fetching {total_emails} emails...") #prints total number of emails
 
-        filename = 'emails_' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + '.csv'
+        filename = 'emails_' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + '.csv' #generates a new csv_file based on time + date
 
-        with open(filename, 'w', newline='', encoding='utf-8') as csv_file:
-            writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL, quotechar='"', escapechar='\\')
-            writer.writerow(['ID', 'From', 'To', 'Subject', 'Body'])
+        with open(filename, 'w', newline='', encoding='utf-8') as csv_file: #open new file
+            writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL, quotechar='"', escapechar='\\') #csv_write
+            writer.writerow(['UID', 'From', 'To', 'Subject', 'Body']) #csv columns
 
-            for bytestring in email_bytestring_list[0].split():
+            for bytestring in tqdm(email_bytestring_list[0].split(), total=total_emails): #with logic to display loadingbar
+                #get everything
                 status, data = self.mail.fetch(bytestring, "(RFC822)")
                 message = email.message_from_bytes(data[0][1])
-                email_id = bytestring
+                #get UID for later comparison
+                status, msg_data = self.mail.fetch(bytestring, '(UID)')
+                uid = msg_data[0].split()[-1].decode('utf-8')
+                uid = uid.rstrip(')') #remove ) from the split 
+                
+                
+                #variables to write to row in csv_file
+                msg_uid = uid
                 email_from = message.get('From')
                 email_to = message.get('To')
                 email_subject = message.get('Subject')
                 email_body = ""
-
+                
+                #get plaintext from the email
                 for part in message.walk():
                     if part.get_content_type() == "text/plain":
                         email_body = part.as_string()
 
-                writer.writerow([email_id, email_from, email_to, email_subject, email_body])
+                writer.writerow([msg_uid, email_from, email_to, email_subject, email_body])
 
         print("file_created")
-        self.mail.close()
-
-
-
-# #Define email class
-# imaplib._MAXLINE = 1000000
-# SERVER = 'imap.gmail.com'
-# #Connect to gmail account using special app pw
-# mail = imaplib.IMAP4_SSL(SERVER) 
-# mail.login('nicolaiaphichat@gmail.com', 'qfvatlxjnagpkqcg')
-# # select the box you want emails from
-# print(mail.list()) 
-# mail.select('INBOX')
-
-# #Search for emails with specificed rows
-# #returns a byte string (bytes) list containing messageid of each email that match the search criteria
-# status, email_bytestring_list = mail.search('utf-8', 'ALL')
-
-# #print if search was successfull 
-# print(status)
-# ##print(email_bytestring_list[0].split())
-
-# #Creates emails.csv if doesnt exist
-# #'W' overrites the file with new data if already exists
-# #newline='' ensures that line endings are suitable for the platform ur using, open() handles it for u
-# #encoding makes sures the special characters python can read the files, regardless of character or language in the file
-# with open('emails.csv', 'w', newline='', encoding='utf-8') as csv_file:
-#     #csv.writer specifies how we want to write to the data, we quote all, escapechar handles commas and quotes chars so we dont split incorrectly
-#     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL, quotechar='"', escapechar='\\')
-#     #Create the folowing columns in the headers of the csv_file
-#     writer.writerow(['ID', 'From', 'To', 'Subject', 'Body'])
-
-#     #The list only has 1 element (the bytestring), so we only iterate through the 1 [0] element
-#     #[b'1 2 3 4 5..]
-#     #We then split bytestring to get each element and loop through them all
-#     #[b'1', b'2', b'3' b'4', b'5'..]
-#     for bytestring in email_bytestring_list[0].split():
-#         #we can then fetch specific emails 
-#         status, data = mail.fetch(bytestring, "(RFC822)") #RFC822 gets header fields and msgbody
-#         #data is not readable atm so we can use the email module to make it readable 
-#         message = email.message_from_bytes(data[0][1]) #tuple
-#         #returns message object
-        
-#         #bytestring is the same as id
-#         emailId = bytestring
-#         emailFrom = message.get('From')
-#         emailTo = message.get('To')
-#         emailSubject = message.get('Subject')
-        
-#         # print(f"From: {message.get('From')}")
-#         # print(f"To: {message.get('To')}")
-#         # print(f"Subject: {message.get('Subject')}")    
-        
-#         print("Content:")
-#         #EMails are multiparts consisting of plaintext, html, attachments
-#         #we want to loop through the parts and get the content where its plain/text
-#         for part in message.walk(): #Iterates through all parts of a multipart msg
-#             if part.get_content_type() == "text/plain":
-#                 emailBody = part.as_string()
-#                 print(part.as_string())
-        
-#         writer.writerow([emailId, emailFrom, emailTo, emailSubject, emailBody])
-        
-#     mail.close()
-# #print if search was successfull 
- 
-
-#to get the contents of the email, we use mail.fetch()
-
-
-
-
-
-#Creates emails.csv if doesnt exist
-#'W' overrites the file with new data if already exists
-#newline='' ensures that line endings are suitable for the platform ur using, open() handles it for u
-#encoding makes sures the special characters python can read the files, regardless of character or language in the file
-# with open('output_filename', 'w', newline='', encoding='utf-8') as csv_file:
-    
-#     #create writer object
-#     writer = csv.writer(csv_file)
-#     writer.writerow()
+        return filename
     
     
-# # Loop through each email ID
-# # for email_id in data[0].split():
+    def move_spam_mails_to_spam_folder(self, labeled_filepath, combobox):
+        with open(labeled_filepath, 'r') as file:
+            reader = csv.reader(file)
+            #login
+            # mail = imaplib.IMAP4_SSL('imap.gmail.com')
+            # mail.login('Nicolaiaphichat@gmail.com', 'qfvatlxjnagpkqcg')
+            # mailboxes = mail.list()[1] 
+            # print(mailboxes)
+            
+            #select folder and allows edits 
+            self.mail.select(combobox, readonly=False)
+            #get all emails from inbox 
+            status, data = self.mail.search(None, 'ALL')
+            #print(status)
+            #print(data) #data is a single bytestring containing containing msg_id based on the search criteri
+            #print(data[0]) # gives you the first (and only) element of the tuple, which is the bytes string containing the message IDs
+            bytestrings = data[0].split() #split the bytestring at every whitespace character and return a list of individual message IDs as strings
+            
+            
+            spam_array = [] #create an array for all labeled spam emails in csv_file
+            
+            for row in reader: ##find all instances where label = 1, which means spam marked by the model
+                if row[5] == '1': #if label = 1
+                    spam_array.append(row[0]) #adds the uid to array, so we can loop through our inbox and compare
+                    
+            print(spam_array)
+            
+            #create testing folder
+            folder_name = 'Moved'
+            self.mail.create(folder_name)
+            
+            #loop through every bytestring and get the uid
+            for bytestring in bytestrings:
+                #fetch the message data and the UID from the bytestring
+                
+                status, msg_data = self.mail.fetch(bytestring, '(UID)') #get the uid of the emails in gmail
+                print("msg_data")
+                print(msg_data) #returns a list of byte objects [b'44 (UID 8891)'], we can split it to get the uid 8891)
+                #we extract the uid by using the split method, splits whitespace, the elements is the last in the last, so we [-1]
+                #decode to convert the byte object to string
+                
+                try:
+                    uid = msg_data[0].split()[-1].decode('utf-8')
+                    uid = uid.rstrip(')')
+                    print(uid)
+                except (AttributeError, IndexError):
+                    print('Error getting UID for bytestring:', bytestring)
 
-# #     # Retrieve the email message
-# #     result, email_data = mail.fetch(email_id, "(RFC822)")
-# #     raw_email = email_data[0][1]
-# #     email_message = email.message_from_bytes(raw_email)
-
-# #     # Print the email details
-# #     print("From:", email_message['From'])
-# #     print("Subject:", email_message['Subject'])
-# #     print("Body:")
-# #     for part in email_message.walk():
-# #         if part.get_content_type() == "text/plain":
-# #             body = part.get_payload(decode=True)
-# #             print(body.decode('utf-8'))
-
-# with open('emails.csv', 'w', newline='', encoding='utf-8') as csvfile:
-    
-#     writer = csv.writer(csvfile)
-#     writer.writerow(['From', 'Subject', 'Body'])
-
-#     # Loop through each email ID
-#     for email_id in data[0].split():
-
-#         # Retrieve the email message
-#         result, email_data = mail.fetch(email_id, "(RFC822)")
-#         raw_email = email_data[0][1]
-#         email_message = email.message_from_bytes(raw_email)
-
-#         # Get the email details
-#         sender = email_message['From']
-#         subject = email_message['Subject']
-#         body = ""
-
-#         # Extract the body of the email
-#         for part in email_message.walk():
-#             if part.get_content_type() == "text/plain":
-#                 try:
-#                     body = part.get_payload(decode=True).decode('utf-8')
-#                 except UnicodeDecodeError:
-#                     body = part.get_payload(decode=True).decode('iso-8859-1')
-
-#         # Write the email details to the CSV file
-#     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL, quotechar='"', escapechar='\\')
-#     writer.writerow(['From', 'Subject', 'Body'])
-
-
-import tkinter as tk
-
-class Model:
-    def __init__(self):
-        self.value1 = 0
-        self.value2 = 0
-        self.result = 0
-
-    def add(self):
-        self.result = self.value1 + self.value2
-        
-class View(tk.Frame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
-        self.value1_label = tk.Label(self, text="Value 1:")
-        self.value1_label.pack(pady=5)
-        self.value1_entry = tk.Entry(self)
-        self.value1_entry.pack(pady=5)
-        self.value2_label = tk.Label(self, text="Value 2:")
-        self.value2_label.pack(pady=5)
-        self.value2_entry = tk.Entry(self)
-        self.value2_entry.pack(pady=5)
-        self.add_button = tk.Button(self, text="Add", command=self.controller.add)
-        self.add_button.pack(pady=5)
-        self.result_label = tk.Label(self, text="Result: 0")
-        self.result_label.pack(pady=5)
-
-    def update(self, result):
-        self.result_label.config(text="Result: " + str(result))
-
-    def get_values(self):
-        value1 = int(self.value1_entry.get())
-        value2 = int(self.value2_entry.get())
-        return value1, value2
-
-class Controller:
-    def __init__(self, root):
-        self.model = Model()
-        self.view = View(root, self)
-
-    def add(self):
-        value1, value2 = self.view.get_values()
-        self.model.value1 = value1
-        self.model.value2 = value2
-        self.model.add()
-        self.view.update(self.model.result)
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    controller = Controller(root)
-    controller.view.pack()
-    root.mainloop()
+                #we then check if the uid is included in the spam_array 
+                if uid in spam_array:
+                    #move files to moved folder
+                    result = self.mail.uid('COPY', uid, 'Moved') 
+                    
+                    #if success
+                    #if result[0] == 'OK':
+                    #mov, data = imap.uid('STORE', msg_uid , '+FLAGS', '(\Deleted)')
+                    #imap.expunge()
+                
+            self.mail.close()
+            self.mail.logout()
+            
+   
