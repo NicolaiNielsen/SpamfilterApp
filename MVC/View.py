@@ -38,11 +38,11 @@ class View(tk.Tk): #Inherits from ttk.frame, so u have access to ttk.frame attr 
         self.folder_combobox.grid(column=0, row=5, columnspan=2, sticky=tk.W, padx=5, pady=5)
 
         # Find spam
-        self.find_button = ttk.Button(self, text="Detect spam mails in folder")
+        self.find_button = ttk.Button(self, text="Detect spam mails in folder", command=self.controller.fetch_emails)
         self.find_button.grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
 
         # move to spam folder
-        self.move_spam_button = ttk.Button(self, text="Move spam to spam folder")
+        self.move_spam_button = ttk.Button(self, text="Move spam to spam folder", command=self.controller.move_emails)
         self.move_spam_button.grid(column=0, row=7, padx=5, pady=5, sticky=tk.W)
 
         # output log
@@ -68,9 +68,10 @@ class View(tk.Tk): #Inherits from ttk.frame, so u have access to ttk.frame attr 
         self.folder_combobox['values'] = folder
         
     def get_folder(self):
-        self.folder_combobox.get()
+        return self.folder_combobox.get() #returns selected combobox value
         
-    def log(self, str):
+    def write(self, str):
         self.text_log.insert(tk.END, str + "\n")
+        self.text_log.see("end")
             
 
