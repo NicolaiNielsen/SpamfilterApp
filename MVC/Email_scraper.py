@@ -101,10 +101,6 @@ class EmailScraper:
                     
             print(spam_array)
             
-            #create testing folder
-            folder_name = 'Moved'
-            self.mail.create(folder_name)
-            
             #loop through every bytestring and get the uid
             for bytestring in bytestrings:
                 #fetch the message data and the UID from the bytestring
@@ -125,12 +121,12 @@ class EmailScraper:
                 #we then check if the uid is included in the spam_array 
                 if uid in spam_array:
                     #move files to moved folder
-                    result = self.mail.uid('COPY', uid, 'Moved') 
+                    result = self.mail.uid('COPY', uid, '[Gmail]/Spam') 
                     
                     #if success
-                    #if result[0] == 'OK':
-                    #mov, data = imap.uid('STORE', msg_uid , '+FLAGS', '(\Deleted)')
-                    #imap.expunge()
+                    if result[0] == 'OK':
+                        data = self.mail.uid('STORE', uid, '+FLAGS', '(\Deleted)')
+                        self.mail.expunge()
                 
             self.mail.close()
             self.mail.logout()
