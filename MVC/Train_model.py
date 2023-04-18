@@ -35,20 +35,20 @@ class Train_model:
         pred = clf.predict(X_train)
         print(classification_report(y_train, pred))
         print()
-        print('Confusion MAtrix: ')
+        print('Confusion MatrixTrain: ')
         print(confusion_matrix(y_train, pred))
         print
-        print("Accuracy: ")
+        print("AccuracyTrain: ")
         print(accuracy_score(y_train, pred))
         print(clf.predict(X_test))
         print(y_test.values)
         pred = clf.predict(X_test)
         print(classification_report(y_test, pred))
         print()
-        print('Confusion MAtrix: ')
+        print('Confusion MAtrix Test: ')
         print(confusion_matrix(y_test, pred))
         print
-        print("Accuracy: ")
+        print("Accuracy Test: ")
         print(accuracy_score(y_test, pred))
         
         with open('simple_model.pkl', 'wb') as f:
@@ -64,8 +64,6 @@ class Train_model:
         print("model loaded")
         
         return model
-        
-    
 
         
 # test = Train_model()
