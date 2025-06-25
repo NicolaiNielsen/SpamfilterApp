@@ -79,7 +79,7 @@ class EmailScraper:
             reader = csv.reader(file)
             #login
             # mail = imaplib.IMAP4_SSL('imap.gmail.com')
-            # mail.login('Nicolaiaphichat@gmail.com', 'qfvatlxjnagpkqcg')
+            # mail.login('xxx@gmail.com', 'xxx')
             # mailboxes = mail.list()[1] 
             # print(mailboxes)
             
